@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>SkyEagle</title>
+<link rel="shortcut icon" href="../images/Yoshi_Egg.png">
+<!--<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>-->
+<link rel="stylesheet" type="text/css" href="../css/styles.css" />
+
+<link rel="stylesheet" href="../css/leaflet.css" />
+<!--[if lte IE 8]><link rel="stylesheet" href="css/leaflet.ie.css" /><![endif]-->
+
+<!--<script src="css/leaflet.js"></script>-->
+<script src="http://cdn.leafletjs.com/leaflet-0.4/leaflet.js"></script>
+<script src="../js/jquery-1.8.2.min.js"></script>
+
+</head>
+<body>
+    <div id="wrapper">
+        <div id="headerwrap">
+			<div id="header">
+				<img class="logo" src="../images/Yoshi_Egg.png" width=55 height=55 align="left"> 
+				<p>SkyEagle<p>
+			</div>
+        </div>
+        <div id="navigationwrap">
+            <ul id="menu-bar">
+				<li><a href="Home.htm">Home</a></li>
+				<li class="current"><a href="Karte.htm">Karte</a></li>
+				<li><a href="#">Diagramme</a>
+				<ul>
+				   <li><a href="#">Diagramm ohne Ausrei&szliger</a></li>	<!--" &szlig " für das ß -->
+				   <li><a href="#">Diagramm mit Ausrei&szliger</a></li>
+				  </ul>
+				 </li>
+				 <li><a href="#">Tabelle</a>
+				  <ul>
+				   <li><a href="#">Tabelle ohne Ausrei&szliger</a></li>
+				   <li><a href="#">Tabelle mit Ausrei&szliger</a></li>
+				  </ul>
+				 </li>
+				 <li><a href="Hilfe.htm">Hilfe</a></li>
+				 <li><a href="Impressum.htm">Impressum</a></li>
+				</ul>
+		</div>
+		</div>
+		<br></br>
+        <div id="map"></div>
+		<form method='POST' onsubmit='addr_search();return false;'>
+		<div id="search">
+			<input class="searchField" type="text" name="addr" value="Stadt eingeben..." 
+				onfocus="if (this.value == 'Stadt eingeben...')
+					{this.value = '';}" onblur="if (this.value == '')
+					{this.value = 'Stadt eingeben...';}" 
+				id="addr" size="10" />
+			<button class="searchButton" type="button" onclick="addr_search();">Suche</button>
+			<div id="results"/>
+		</div>
+		</form>
+		<script src="../js/map.js"></script>
+</body>
+</html>
