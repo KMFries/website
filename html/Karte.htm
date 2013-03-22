@@ -1,3 +1,19 @@
+<?php
+	$namen = array(
+		'egg' => 'Egg',
+		'lanuv' => 'LANUV'
+		);
+	include_once 'dbconnector.php';
+	$eggname = getName();
+	$eggcoords = getCoords();
+	$eggtemp = getLatestTemp();
+	$egghum = getLatestHum();
+	$eggco = getLatestCO();
+	$eggno2 = getLatestNO2();
+	$eggo3 = getLatestO3();
+	print_r($eggtemp);
+	echo $eggname[0]['feature_of_interest_name'];
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,8 +41,8 @@
         </div>
         <div id="navigationwrap">
             <ul id="menu-bar"> <!-- Reiter und Menüpunkte. Namen und Verlinkungen -->
-				<li><a href="Home.htm">Home</a></li>
-				<li class="current"><a href="Karte.htm">Karte</a></li>
+				<li><a href="Home.php">Home</a></li>
+				<li class="current"><a href="Karte.php">Karte</a></li>
 				<li><a href="#">Diagramme</a>
 				<ul>
 				   <li><a href="../php/test.php">Diagramm ohne Ausrei&szliger</a></li>	<!--" &szlig " für das ß -->
@@ -39,16 +55,16 @@
 				   <li><a href="#">Tabelle mit Ausrei&szliger</a></li>
 				  </ul>
 				 </li>
-				 <li><a href="Hilfe.htm">Hilfe</a></li>
-				 <li><a href="Impressum.htm">Impressum</a></li>
+				 <li><a href="Hilfe.php">Hilfe</a></li>
+				 <li><a href="Impressum.php">Impressum</a></li>
 				</ul>
 		</div>
 		</div>
 		<br></br>
         <div id="map"></div>
 		<form method='POST' onsubmit='addr_search();return false;'> <!-- Auch Drücken von Enter löst die Suche aus -->
-		<div id="search">
-			<input class="searchField" type="text" name="addr" value="Stadt eingeben..." <!-- Schriftzug "Stadt eingeben..." taucht auf und verschwindet" -->
+		<div id="search"> <!-- Schriftzug "Stadt eingeben..." taucht auf und verschwindet" -->
+			<input class="searchField" type="text" name="addr" value="Stadt eingeben..." 
 				onfocus="if (this.value == 'Stadt eingeben...')
 					{this.value = '';}" onblur="if (this.value == '')
 					{this.value = 'Stadt eingeben...';}" 
@@ -57,6 +73,108 @@
 			<div id="results"/>
 		</div>
 		</form>
-		<script src="../js/map.js"></script>
+		
+		<script language="javascript" type="text/javascript">
+		
+		var map;
+
+		function load_map() {
+			
+			map = new L.map('map', {zoomControl: true}).setView([51.967, 7.63],13);
+			L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				maxZoom: 18,
+				attribution: 'Map data &copy; 2012 <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+			}).addTo(map);
+			var eggIcon = L.icon({
+				iconUrl: '../images/Yoshi_Egg.png',
+				iconSize: [28,28]
+			});
+			var lanuvIcon = L.icon({
+				iconUrl: 'http://www.mobile-dienste-nrw.de/images/NRW_Wappen.jpg',
+				iconSize: [28,28]
+			});
+						
+			var i = 0;
+			var EierNamen = eval(' (' + <?php print json_encode(json_encode($eggname)); ?> + ')');
+			var EierCoords = eval( ' (' + <?php print json_encode(json_encode($eggcoords)); ?> + ')');
+			var EierTemp = eval( ' (' + <?php print json_encode(json_encode($eggtemp)); ?> + ')');
+			var EierLuft = eval( ' (' + <?php print json_encode(json_encode($egghum)); ?> + ')');
+			var EierCO = eval( ' (' + <?php print json_encode(json_encode($eggco)); ?> + ')');
+			var EierNO2 = eval( ' (' + <?php print json_encode(json_encode($eggno2)); ?> + ')');
+			var EierO3 = eval( ' (' + <?php print json_encode(json_encode($eggo3)); ?> + ')');
+			
+			
+			while (i <= 13) {
+				var EggName = EierNamen[i].feature_of_interest_name;
+				
+				var EggCoordX = EierCoords[i].st_y;
+				var EggCoordY = EierCoords[i].st_x;
+				
+				if (EierTemp[i] === undefined) {var EggTemp = 'nix'}
+				else var EggTemp = EierTemp[i].numeric_value;
+				
+				if (EierLuft[i] === undefined) {var EggHum = 'nix'}
+				else var EggHum = EierLuft[i].numeric_value;
+				
+				if (EierCO[i] === undefined) {var EggCO = 'nix'}
+				else var EggCO = EierCO[i].numeric_value;
+				
+				if (EierNO2[i] === undefined) {var EggNO2 = 'nix'}
+				else var EggNO2 = EierNO2[i].numeric_value;
+				
+				if (EierO3[i] === undefined) {var EggO3 = 'nix'}
+				else var EggO3 = EierO3[i].numeric_value;
+				
+				//alert(EierCoords[0].st_x);
+				//alert(EierCoordX);
+			
+				var markerIfgi = L.marker([EggCoordX, EggCoordY],{icon: eggIcon}).bindPopup(
+					EggName+"</br><a href=\"http://de.wikipedia.org/wiki/Temperatur\" target=\"_blank\">Temperatur</a>: "
+					+EggTemp+" °C</br><a href=\"http://de.wikipedia.org/wiki/Luftfeuchtigkeit\"target=\"_blank\">Luftfeuchtigkeit</a>: "
+					+EggHum+" %</br><a href=\"http://de.wikipedia.org/wiki/Kohlenstoffmonoxid\"target=\"_blank\">Kohlenstoffmonoxid</a>: "
+					+EggCO+" ppm</br><a href=\"http://de.wikipedia.org/wiki/Stickstoffdioxid\"target=\"_blank\">Stickstoffdioxid</a>: "
+					+EggNO2+" ppm</br><a href=\"http://de.wikipedia.org/wiki/Ozon\"target=\"_blank\">Ozon</a>: "
+					+EggO3+" ppm")
+					.addTo(map);				
+				i++;
+			}
+			var markerMathe = L.marker([51.966, 7.603],{icon: lanuvIcon}).addTo(map);
+		}
+
+		function chooseAddr(lat, lng, type) {
+			var location = new L.LatLng(lat, lng);
+			map.panTo(location);
+			if (type == 'city' || type == 'administrative') {
+				map.setZoom(11);
+			} else {
+				map.setZoom(15);
+			}
+		}
+
+		function addr_search() {
+			var inp = document.getElementById("addr");
+			$.getJSON('http://nominatim.openstreetmap.org/search?format=json&limit=5&q=' + inp.value, function(data) {
+				var items = [];
+
+				$.each(data, function(key, val) {
+					items.push("<li><a href='#' onclick='chooseAddr(" + val.lat + ", " + val.lon + ", \"" + val.type + "\");return false;'>" + val.display_name + '</a></li>');
+				});
+
+				$('#results').empty();
+					if (items.length != 0) {
+						$('<p>', { html: "Search results:" }).appendTo('#results');
+						$('<ul/>', {
+							'class': 'my-new-list',
+							html: items.join('')
+						}).appendTo('#results');
+					} else {
+						$('<p>', { html: "No results found" }).appendTo('#results');
+					}
+			});
+		}
+
+		window.onload = load_map;
+		
+		</script>		
 </body>
 </html>
